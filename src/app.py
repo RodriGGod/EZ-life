@@ -1,10 +1,12 @@
-import tkinter as tk
-from tkinter import messagebox, filedialog # Necesario para buscar archivos manuales
+import eel
 import json
 import os
 import sys
 import psutil
-import keyboard # Necesario para escuchar el atajo
+import winreg
+import keyboard
+import tkinter as tk
+from tkinter import filedialog
 
 # --- Rutas ---
 if getattr(sys, 'frozen', False):
@@ -14,213 +16,106 @@ else:
 
 CONFIG_FILE = os.path.join(BASE_DIR, 'config.json')
 
-# Lista base de búsqueda automática
-NAVEGADORES_COMUNES = {
-    "Brave": [
-        r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
-        os.path.expanduser(r"~\AppData\Local\BraveSoftware\Brave-Browser\Application\brave.exe")
-    ],
-    "Opera GX": [
-        os.path.expanduser(r"~\AppData\Local\Programs\Opera GX\launcher.exe"),
-        os.path.expanduser(r"~\AppData\Local\Programs\Opera\launcher.exe"), # A veces se instala aquí
-        r"C:\Program Files\Opera GX\launcher.exe"
-    ],
-    "Chrome": [
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
-    ],
-    "Firefox": [
-        r"C:\Program Files\Mozilla Firefox\firefox.exe"
-    ],
-    "Edge": [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+# Inicializar Eel
+eel.init('web')
+
+# --- LÓGICA DE BÚSQUEDA (Igual que antes) ---
+def buscar_navegadores_sistema():
+    encontrados = []
+    rutas_vistas = set()
+
+    # 1. Registro
+    rutas_reg = [
+        r"SOFTWARE\Clients\StartMenuInternet",
+        r"SOFTWARE\WOW6432Node\Clients\StartMenuInternet"
     ]
-}
+    roots = [winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER]
 
-class AppAccesibilidad:
-    def __init__(self, root):
-        self.root = root
-        
-        # --- [ZONA DE DISEÑO] Configuración General ---
-        self.root.title("Switch Browser Config")
-        self.root.geometry("450x550") # Tamaño de la ventana (Ancho x Alto)
-        self.root.configure(bg="#f0f0f0") # Color de fondo general (Gris claro)
-        
-        # Estilos de fuentes (Puedes cambiarlas aquí)
-        self.font_titulo = ("Segoe UI", 12, "bold")
-        self.font_texto = ("Segoe UI", 10)
-        
-        # ------------------------------------------------
-        # 1. SECCIÓN ATAJO DE TECLADO
-        # ------------------------------------------------
-        frame_atajo = tk.Frame(root, bg="white", padx=10, pady=10, relief="groove", bd=1)
-        frame_atajo.pack(pady=15, padx=20, fill="x")
-
-        tk.Label(frame_atajo, text="1. Configurar Atajo:", font=self.font_titulo, bg="white").pack(anchor="w")
-
-        # Contenedor horizontal para entry y botón
-        row_atajo = tk.Frame(frame_atajo, bg="white")
-        row_atajo.pack(fill="x", pady=5)
-
-        self.entry_atajo = tk.Entry(row_atajo, font=("Consolas", 12), justify="center", bg="#e8e8e8")
-        self.entry_atajo.insert(0, "alt gr+b")
-        self.entry_atajo.pack(side="left", fill="x", expand=True, padx=(0, 10))
-
-        # Botón para grabar
-        self.btn_grabar = tk.Button(row_atajo, text="🎤 Grabar", bg="#2196F3", fg="white",
-                                    font=("Segoe UI", 9, "bold"), command=self.escuchar_atajo)
-        self.btn_grabar.pack(side="right")
-        
-        tk.Label(frame_atajo, text="Pulsa 'Grabar' y presiona tu combinación.", 
-                 fg="gray", bg="white", font=("Arial", 8)).pack(anchor="w")
-
-        # ------------------------------------------------
-        # 2. SECCIÓN NAVEGADORES
-        # ------------------------------------------------
-        frame_nav = tk.Frame(root, bg="white", padx=10, pady=10, relief="groove", bd=1)
-        frame_nav.pack(pady=5, padx=20, fill="both", expand=True)
-
-        tk.Label(frame_nav, text="2. Seleccionar Navegadores:", font=self.font_titulo, bg="white").pack(anchor="w")
-
-        # Frame con scroll para la lista
-        self.canvas_lista = tk.Canvas(frame_nav, bg="white", highlightthickness=0)
-        self.scrollbar = tk.Scrollbar(frame_nav, orient="vertical", command=self.canvas_lista.yview)
-        self.scroll_frame = tk.Frame(self.canvas_lista, bg="white")
-
-        self.scroll_frame.bind(
-            "<Configure>",
-            lambda e: self.canvas_lista.configure(scrollregion=self.canvas_lista.bbox("all"))
-        )
-
-        self.canvas_lista.create_window((0, 0), window=self.scroll_frame, anchor="nw")
-        self.canvas_lista.configure(yscrollcommand=self.scrollbar.set)
-
-        self.canvas_lista.pack(side="left", fill="both", expand=True, pady=5)
-        self.scrollbar.pack(side="right", fill="y", pady=5)
-
-        # Variables para guardar info
-        self.lista_navegadores_ui = [] # Guardará referencias a los checkboxes
-
-        # Cargar navegadores detectados automáticamente
-        self.cargar_navegadores_auto()
-
-        # Botón Añadir Manualmente
-        btn_add = tk.Button(frame_nav, text="+ Añadir Manualmente (.exe)", 
-                            command=self.anadir_manual,
-                            bg="#ff9800", fg="white", font=("Segoe UI", 9))
-        btn_add.pack(pady=5, fill="x")
-
-        # ------------------------------------------------
-        # 3. BOTÓN GUARDAR
-        # ------------------------------------------------
-        btn_guardar = tk.Button(root, text="GUARDAR Y APLICAR", 
-                                bg="#4CAF50", fg="white", font=("Segoe UI", 11, "bold"),
-                                command=self.guardar_config, cursor="hand2")
-        btn_guardar.pack(pady=20, ipadx=20, ipady=5)
-
-    def escuchar_atajo(self):
-        """Escucha la siguiente combinación de teclas"""
-        self.btn_grabar.config(text="Escuchando...", bg="red")
-        self.root.update()
-        
-        try:
-            # Lee el atajo (bloquea la app momentáneamente hasta que pulsas)
-            atajo = keyboard.read_hotkey(suppress=False)
-            
-            # Limpiar y poner el nuevo
-            self.entry_atajo.delete(0, tk.END)
-            self.entry_atajo.insert(0, atajo)
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo detectar: {e}")
-        
-        self.btn_grabar.config(text="🎤 Grabar", bg="#2196F3")
-
-    def anadir_manual(self):
-        """Abre explorador de archivos para buscar .exe"""
-        ruta = filedialog.askopenfilename(
-            title="Selecciona el ejecutable del navegador",
-            filetypes=[("Ejecutables", "*.exe"), ("Todos los archivos", "*.*")]
-        )
-        if ruta:
-            nombre = os.path.basename(ruta).replace(".exe", "").capitalize()
-            # Añadir a la lista visual
-            self.agregar_checkbox(nombre, ruta, marcado=True)
-
-    def agregar_checkbox(self, nombre, ruta, marcado=False):
-        """Crea un checkbox en la lista visual"""
-        var = tk.BooleanVar(value=marcado)
-        chk = tk.Checkbutton(self.scroll_frame, text=f"{nombre}", variable=var, 
-                             bg="white", font=self.font_texto, anchor="w")
-        
-        # Tooltip simple (nombre de ruta al pasar mouse) opcional
-        # chk.bind("<Enter>", lambda e: self.root.title(f"Ruta: {ruta}"))
-
-        chk.pack(fill="x", pady=2)
-        
-        self.lista_navegadores_ui.append({
-            "nombre": nombre,
-            "ruta": ruta,
-            "var": var
-        })
-
-    def cargar_navegadores_auto(self):
-        """Busca en el PC y rellena la lista"""
-        for nombre, rutas in NAVEGADORES_COMUNES.items():
-            for ruta in rutas:
-                if os.path.exists(ruta):
-                    self.agregar_checkbox(nombre, ruta, marcado=False)
-                    break # Si encuentra una ruta válida para ese navegador, para de buscar
-
-    def guardar_config(self):
-        atajo = self.entry_atajo.get()
-        seleccionados = []
-        
-        for item in self.lista_navegadores_ui:
-            if item["var"].get():
-                seleccionados.append({
-                    "nombre": item["nombre"],
-                    "ruta": item["ruta"]
-                })
-
-        if not seleccionados:
-            messagebox.showwarning("Cuidado", "Debes seleccionar al menos un navegador.")
-            return
-
-        data = {
-            "atajo": atajo,
-            "navegadores_activos": seleccionados,
-            "indice_actual": 0
-        }
-
-        try:
-            with open(CONFIG_FILE, 'w') as f:
-                json.dump(data, f, indent=4)
-            
-            self.reiniciar_controlador()
-            messagebox.showinfo("Listo", "Configuración guardada.\nPuedes cerrar esta ventana.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo guardar: {e}")
-
-    def reiniciar_controlador(self):
-        nombre_proceso = "controlador.exe"
-        # Matar proceso
-        for proc in psutil.process_iter():
+    for root in roots:
+        for sub_reg in rutas_reg:
             try:
-                if proc.name() == nombre_proceso:
-                    proc.kill()
-            except: pass
-        
-        # Iniciar nuevo
-        ruta_controlador = os.path.join(BASE_DIR, nombre_proceso)
-        if os.path.exists(ruta_controlador):
-            os.startfile(ruta_controlador)
-        else:
-            # Modo desarrollo (.py)
-            ruta_py = os.path.join(BASE_DIR, "controlador.py")
-            if os.path.exists(ruta_py):
-               os.system(f'start python "{ruta_py}"')
+                key = winreg.OpenKey(root, sub_reg)
+                count = winreg.QueryInfoKey(key)[0]
+                for i in range(count):
+                    try:
+                        name = winreg.EnumKey(key, i)
+                        cmd_path = sub_reg + "\\" + name + "\\shell\\open\\command"
+                        cmd_key = winreg.OpenKey(root, cmd_path)
+                        val, _ = winreg.QueryValueEx(cmd_key, "")
+                        exe_path = val.replace('"', '').strip()
+                        
+                        if os.path.exists(exe_path) and exe_path not in rutas_vistas:
+                            display_name = name
+                            if "Opera GX" in name or "OperaGX" in exe_path: display_name = "Opera GX"
+                            if "Brave" in name: display_name = "Brave Browser"
+                            
+                            encontrados.append({"nombre": display_name, "ruta": exe_path})
+                            rutas_vistas.add(exe_path)
+                    except: continue
+            except: continue
 
-if __name__ == "__main__":
+    # 2. Búsqueda Manual AppData
+    user_home = os.path.expanduser("~")
+    rutas_extra = [
+        (os.path.join(user_home, r"AppData\Local\Programs\Opera GX\launcher.exe"), "Opera GX"),
+        (os.path.join(user_home, r"AppData\Local\Programs\Opera\launcher.exe"), "Opera"),
+        (r"C:\Program Files\Opera GX\launcher.exe", "Opera GX")
+    ]
+
+    for path, name in rutas_extra:
+        if os.path.exists(path) and path not in rutas_vistas:
+            encontrados.append({"nombre": name, "ruta": path})
+            rutas_vistas.add(path)
+
+    return encontrados
+
+# --- API EEL ---
+
+@eel.expose
+def get_data_inicial():
+    config = {}
+    if os.path.exists(CONFIG_FILE):
+        try:
+            with open(CONFIG_FILE, 'r') as f: config = json.load(f)
+        except: pass
+    return {"config": config, "sistema": buscar_navegadores_sistema()}
+
+@eel.expose
+def grabar_atajo():
+    return keyboard.read_hotkey(suppress=False)
+
+@eel.expose
+def examinar_exe():
     root = tk.Tk()
-    app = AppAccesibilidad(root)
-    root.mainloop()
+    root.withdraw()
+    root.attributes("-topmost", True)
+    ruta = filedialog.askopenfilename(filetypes=[("Ejecutables", "*.exe")])
+    root.destroy()
+    if ruta:
+        return {"nombre": os.path.basename(ruta).replace(".exe", "").capitalize(), "ruta": ruta}
+    return None
+
+@eel.expose
+def guardar_configuracion(atajo, lista_activos):
+    data = {"atajo": atajo, "navegadores_activos": lista_activos, "indice_actual": 0}
+    try:
+        with open(CONFIG_FILE, 'w') as f: json.dump(data, f, indent=4)
+        reiniciar_controlador()
+        return True
+    except Exception as e: return str(e)
+
+def reiniciar_controlador():
+    nombre = "controlador.exe"
+    for proc in psutil.process_iter():
+        try:
+            if proc.name() == nombre: proc.kill()
+        except: pass
+    
+    ruta = os.path.join(BASE_DIR, nombre)
+    if os.path.exists(ruta): os.startfile(ruta)
+    else:
+        ruta_dev = os.path.join(BASE_DIR, "controlador.py")
+        if os.path.exists(ruta_dev): os.system(f'start python "{ruta_dev}"')
+
+# Arrancar Eel
+eel.start('index.html', size=(700, 500), port=0)

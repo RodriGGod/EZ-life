@@ -1,0 +1,14 @@
+{
+    "atajo": "B+alt gr",
+    "navegadores_activos": [
+        {
+            "nombre": "Brave Browser",
+            "ruta": "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+        },
+        {
+            "nombre": "Opera GX",
+            "ruta": "C:\\Program Files\\Opera GX\\opera.exe"
+        }
+    ],
+    "indice_actual": 0
+}

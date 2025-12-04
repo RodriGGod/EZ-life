@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate" />
+    
+    <title>EZLife Tool</title>
+    
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="/eel.js"></script>
+</head>
+<body>
+
+    <h1>EZLife Tool_</h1>
+    <h4>by RodriGGod</h4> <div class="module-row">
+        
+        <div class="module-info">
+            <div class="module-title">Browsers</div>
+            <div class="module-desc">Web Executable Management</div>
+        </div>
+
+        <div class="module-content">
+            <div class="col-shortcut">
+                <label>Input Trigger</label>
+                <div class="input-wrapper">
+                    <input type="text" id="atajoInput" value="..." readonly>
+                    <button class="btn-record" id="btnGrabar" onclick="grabar()">REC</button>
+                </div>
+            </div>
+
+            <div class="col-list">
+                <label>Active Targets</label>
+                <div class="scroll-list" id="listaNavegadores"></div>
+                <button class="btn-manual" onclick="anadirManual()">+ LINK MANUAL .EXE</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-save" onclick="guardar()">INITIALIZE CONFIG</button>
+
+    <script>
+        let navegadoresGlobales = [];
+
+        window.onload = async () => {
+            const data = await eel.get_data_inicial()();
+            const config = data.config;
+            
+            document.getElementById('atajoInput').value = config.atajo || "alt gr+b";
+
+            let listaSistema = data.sistema;
+            let listaConfig = config.navegadores_activos || [];
+
+            listaSistema.forEach(sis => {
+                sis.checked = listaConfig.some(conf => conf.ruta === sis.ruta);
+            });
+
+            listaConfig.forEach(conf => {
+                if (!listaSistema.some(s => s.ruta === conf.ruta)) {
+                    conf.checked = true;
+                    listaSistema.push(conf);
+                }
+            });
+
+            navegadoresGlobales = listaSistema;
+            renderizar();
+        };
+
+        function renderizar() {
+            const container = document.getElementById('listaNavegadores');
+            container.innerHTML = "";
+            navegadoresGlobales.forEach((nav, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="chk_${index}" ${nav.checked ? 'checked' : ''} onchange="toggleCheck(${index})">
+                    <label for="chk_${index}" style="margin:0; cursor:pointer; flex:1;">
+                        <span>${nav.nombre}</span>
+                    </label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleCheck(index) {
+            navegadoresGlobales[index].checked = !navegadoresGlobales[index].checked;
+        }
+
+        async function grabar() {
+            const btn = document.getElementById('btnGrabar');
+            const input = document.getElementById('atajoInput');
+            btn.classList.add('recording');
+            input.value = "WAITING INPUT...";
+            const teclas = await eel.grabar_atajo()();
+            input.value = teclas;
+            btn.classList.remove('recording');
+        }
+
+        async function anadirManual() {
+            const nuevo = await eel.examinar_exe()();
+            if (nuevo) {
+                nuevo.checked = true;
+                navegadoresGlobales.push(nuevo);
+                renderizar();
+            }
+        }
+
+        async function guardar() {
+            const atajo = document.getElementById('atajoInput').value;
+            const activos = navegadoresGlobales.filter(n => n.checked).map(n => ({
+                nombre: n.nombre, ruta: n.ruta
+            }));
+
+            if (activos.length === 0) { alert("⚠️ SYSTEM ERROR: TARGET MISSING"); return; }
+
+            const ok = await eel.guardar_configuracion(atajo, activos)();
+            if (ok === true) { alert("✅ SYSTEM UPDATED"); }
+        }
+    </script>
+</body>
+</html>
