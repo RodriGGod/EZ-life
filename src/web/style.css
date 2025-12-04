@@ -436,40 +436,6 @@ input,
     -webkit-app-region: no-drag;
 }
 
-.title-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    z-index: 1000;
-    display: flex;
-    justify-content: flex-end;
-    /* Botón X a la derecha */
-    padding: 10px;
-
-    /* ESTA PROPIEDAD HACE QUE SE PUEDA ARRASTRAR LA VENTANA */
-    -webkit-app-region: drag;
-}
-
-/* Botón de cerrar personalizado */
-.btn-close {
-    -webkit-app-region: no-drag;
-    /* Importante: para poder hacer clic */
-    background: transparent;
-    border: none;
-    color: #666;
-    font-family: var(--font-stack);
-    font-weight: bold;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-.btn-close:hover {
-    color: var(--accent);
-}
-
 /* --- ZONA DE ARRASTRE (DRAG ZONE) --- */
 .title-bar {
     position: fixed;

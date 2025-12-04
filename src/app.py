@@ -7,7 +7,7 @@ import winreg
 import keyboard
 import tkinter as tk
 from tkinter import filedialog
-import threading
+
 
 # --- 1. CONFIGURACIÓN DE RUTAS (CRÍTICO PARA EVITAR ERROR 404) ---
 if getattr(sys, 'frozen', False):
