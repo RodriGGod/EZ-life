@@ -11,7 +11,7 @@
 <body>
 
     <div class="title-bar">
-        <button class="btn-close" onclick="cerrarApp()">[X]</button>
+        <button class="btn-close" onclick="cerrarApp()">X</button>
     </div>
 
     <h1 style="margin-top: 10px;">EZLife</h1>
@@ -21,6 +21,19 @@
         <div class="module-info">
             <div class="module-title">Browsers</div>
             <div class="module-desc">Web Executable Management</div>
+            <div class="module-desc">
+                Add ezlife browser to default apps to use it.
+                <div class="copy-container">
+                    <button id="btnCopyPath" class="btn-copy-path" onclick="copiarRuta()" data-path="...">
+                        COPY PATH
+                    </button>
+                </div>
+                <button class="btn-manual" style="margin-top: 5px; border-top: none; color: var(--accent);"
+                    onclick="abrirDefaultApps()">
+                    OPEN DEFAULT APPS
+                </button>
+            </div>
+
         </div>
         <div class="module-content">
             <div class="col-shortcut">
@@ -47,6 +60,12 @@
         window.addEventListener('pywebviewready', async function () {
             const data = await window.pywebview.api.get_data_inicial();
             const config = data.config;
+
+            // Configurar botón de copia
+            if (data.browserPath) {
+                const btn = document.getElementById('btnCopyPath');
+                btn.setAttribute('data-path', data.browserPath);
+            }
 
             document.getElementById('atajoInput').value = config.atajo || "alt gr+b";
             let listaSistema = data.sistema;
@@ -119,11 +138,32 @@
             if (activos.length === 0) { alert("⚠️ ERROR: TARGET MISSING"); return; }
 
             const ok = await window.pywebview.api.guardar_configuracion(atajo, activos);
-            if (ok === true) { alert("✅ SYSTEM UPDATED"); }
+            if (ok === true) {
+                const btn = document.querySelector('.btn-save');
+                const original = btn.innerText;
+                btn.innerText = "SYSTEM UPDATED";
+                setTimeout(() => btn.innerText = original, 1500);
+            }
         }
 
         function cerrarApp() {
             window.pywebview.api.cerrar_app();
+        }
+
+        function abrirDefaultApps() {
+            window.pywebview.api.open_default_apps();
+        }
+
+        function copiarRuta() {
+            const btn = document.getElementById('btnCopyPath');
+            const ruta = btn.getAttribute('data-path');
+            if (ruta && ruta !== '...') {
+                navigator.clipboard.writeText(ruta).then(() => {
+                    const originalText = btn.innerText;
+                    btn.innerText = "COPIED!";
+                    setTimeout(() => btn.innerText = originalText, 1500);
+                });
+            }
         }
     </script>
 </body>
