@@ -6,20 +6,21 @@ import threading
 import tkinter as tk
 import time
 
-# --- Rutas ---
-if getattr(sys, 'frozen', False):
-    BASE_DIR = os.path.dirname(sys.executable)
-else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# --- CORRECCIÓN DE RUTAS (APPDATA) ---
+# En lugar de guardar junto al exe, guardamos en la carpeta del usuario
+USER_DATA_DIR = os.path.join(os.getenv('APPDATA'), 'EZLifeTool')
+if not os.path.exists(USER_DATA_DIR):
+    os.makedirs(USER_DATA_DIR)
 
-CONFIG_FILE = os.path.join(BASE_DIR, 'config.json')
+CONFIG_FILE = os.path.join(USER_DATA_DIR, 'config.json')
 
 def cargar_config():
     if os.path.exists(CONFIG_FILE):
-        with open(CONFIG_FILE, 'r') as f:
-            return json.load(f)
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                return json.load(f)
+        except: pass
     return None
-
 def guardar_indice(nuevo_indice):
     # Leemos, modificamos solo el índice y guardamos
     try:

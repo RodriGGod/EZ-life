@@ -3,21 +3,16 @@ import os
 import subprocess
 import json
 
-# --- Configuración de Rutas ---
-if getattr(sys, 'frozen', False):
-    BASE_DIR = os.path.dirname(sys.executable)
-else:
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-CONFIG_FILE = os.path.join(BASE_DIR, 'config.json')
+# --- CORRECCIÓN DE RUTAS (APPDATA) ---
+USER_DATA_DIR = os.path.join(os.getenv('APPDATA'), 'EZLifeTool')
+CONFIG_FILE = os.path.join(USER_DATA_DIR, 'config.json')
 
 def cargar_config():
     if os.path.exists(CONFIG_FILE):
         try:
             with open(CONFIG_FILE, 'r') as f:
                 return json.load(f)
-        except:
-            return None
+        except: pass
     return None
 
 def abrir_url(url):
