@@ -1,0 +1,8 @@
+{
+    "atajo": "alt gr+b",
+    "navegadores_activos": [
+        {"nombre": "Brave", "ruta": "C:/.../brave.exe"},
+        {"nombre": "Opera GX", "ruta": "C:/.../launcher.exe"}
+    ],
+    "indice_actual": 0
+}
