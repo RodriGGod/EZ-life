@@ -1,24 +1,27 @@
 <!DOCTYPE html>
-<html lang="en"> <head>
+<html lang="en">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate" />
-    
     <title>EZLife Tool</title>
-    
     <link rel="stylesheet" href="style.css">
-    <script type="text/javascript" src="/eel.js"></script>
 </head>
+
 <body>
 
-    <h1>EZLife Tool_</h1>
-    <h4>by RodriGGod</h4> <div class="module-row">
-        
+    <div class="title-bar">
+        <button class="btn-close" onclick="cerrarApp()">[X]</button>
+    </div>
+
+    <h1 style="margin-top: 10px;">EZLife</h1>
+    <h4>by RodriGGod</h4>
+
+    <div class="module-row">
         <div class="module-info">
             <div class="module-title">Browsers</div>
             <div class="module-desc">Web Executable Management</div>
         </div>
-
         <div class="module-content">
             <div class="col-shortcut">
                 <label>Input Trigger</label>
@@ -27,7 +30,6 @@
                     <button class="btn-record" id="btnGrabar" onclick="grabar()">REC</button>
                 </div>
             </div>
-
             <div class="col-list">
                 <label>Active Targets</label>
                 <div class="scroll-list" id="listaNavegadores"></div>
@@ -41,19 +43,18 @@
     <script>
         let navegadoresGlobales = [];
 
-        window.onload = async () => {
-            const data = await eel.get_data_inicial()();
+        // Pywebview dispara este evento cuando está listo
+        window.addEventListener('pywebviewready', async function () {
+            const data = await window.pywebview.api.get_data_inicial();
             const config = data.config;
-            
-            document.getElementById('atajoInput').value = config.atajo || "alt gr+b";
 
+            document.getElementById('atajoInput').value = config.atajo || "alt gr+b";
             let listaSistema = data.sistema;
             let listaConfig = config.navegadores_activos || [];
 
             listaSistema.forEach(sis => {
                 sis.checked = listaConfig.some(conf => conf.ruta === sis.ruta);
             });
-
             listaConfig.forEach(conf => {
                 if (!listaSistema.some(s => s.ruta === conf.ruta)) {
                     conf.checked = true;
@@ -63,7 +64,7 @@
 
             navegadoresGlobales = listaSistema;
             renderizar();
-        };
+        });
 
         function renderizar() {
             const container = document.getElementById('listaNavegadores');
@@ -85,18 +86,23 @@
             navegadoresGlobales[index].checked = !navegadoresGlobales[index].checked;
         }
 
+        // Llamadas a Python (Fíjate en window.pywebview.api)
         async function grabar() {
             const btn = document.getElementById('btnGrabar');
             const input = document.getElementById('atajoInput');
             btn.classList.add('recording');
-            input.value = "WAITING INPUT...";
-            const teclas = await eel.grabar_atajo()();
-            input.value = teclas;
-            btn.classList.remove('recording');
+            input.value = "WAITING...";
+
+            // Usamos setTimeout para que la UI se actualice antes de bloquear
+            setTimeout(async () => {
+                const teclas = await window.pywebview.api.grabar_atajo();
+                input.value = teclas;
+                btn.classList.remove('recording');
+            }, 100);
         }
 
         async function anadirManual() {
-            const nuevo = await eel.examinar_exe()();
+            const nuevo = await window.pywebview.api.examinar_exe();
             if (nuevo) {
                 nuevo.checked = true;
                 navegadoresGlobales.push(nuevo);
@@ -110,11 +116,16 @@
                 nombre: n.nombre, ruta: n.ruta
             }));
 
-            if (activos.length === 0) { alert("⚠️ SYSTEM ERROR: TARGET MISSING"); return; }
+            if (activos.length === 0) { alert("⚠️ ERROR: TARGET MISSING"); return; }
 
-            const ok = await eel.guardar_configuracion(atajo, activos)();
+            const ok = await window.pywebview.api.guardar_configuracion(atajo, activos);
             if (ok === true) { alert("✅ SYSTEM UPDATED"); }
+        }
+
+        function cerrarApp() {
+            window.pywebview.api.cerrar_app();
         }
     </script>
 </body>
+
 </html>

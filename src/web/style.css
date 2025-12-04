@@ -1,31 +1,45 @@
 /* --- 🎨 ESTILO: HACKER TERMINAL (PURE BLACK & LIME) --- */
 :root {
     /* COLORES BASE */
-    --bg-app: #000000;          
-    --card-bg: rgba(0, 0, 0, 0.8); 
-    
+    --bg-app: rgba(0, 0, 0, 0.85);
+    --card-bg: rgba(0, 0, 0, 0.8);
+
     /* ACENTOS */
-    --neon-border: #ffffff;     
-    --accent: #00ff00;          /* EL VERDE LIME */
-    
+    --neon-border: #ffffff;
+    --accent: #00ff00;
+    /* EL VERDE LIME */
+
     /* TEXTOS */
-    --text-main: #ffffff;       
-    --text-muted: #888888;      
-    
+    --text-main: #ffffff;
+    --text-muted: #888888;
+
     /* TIPOGRAFÍA */
     --font-stack: Menlo, Monaco, Lucida Console, "Courier New", Courier, monospace;
+    --bg-app: rgba(0, 0, 0, 0.85);
+}
+
+html {
+    background-color: transparent;
 }
 
 body {
     background-color: var(--bg-app);
     color: var(--text-main);
     font-family: var(--font-stack);
-    margin: 0;
+    margin: 8px;
+    /* Margen para que se vea el borde exterior */
     padding: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    user-select: none;
+
+    /* Borde de la ventana propia */
+    border: 1px solid #333;
+
+
+    /* Sombra para que destaque sobre el escritorio */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+
+    height: 90vh;
+    /* Altura ajustada */
+    overflow: hidden;
 }
 
 /* --- TITULO --- */
@@ -35,16 +49,19 @@ h1 {
     text-transform: uppercase;
     font-size: 1.2rem;
     text-align: center;
-    margin-bottom: 5px; /* Reducido para acercar el h4 */
-    color: var(--text-main); 
-    border: none; /* Quitamos borde del h1 */
+    margin-bottom: 5px;
+    /* Reducido para acercar el h4 */
+    color: var(--text-main);
+    border: none;
+    /* Quitamos borde del h1 */
     padding-bottom: 0;
 }
 
 /* --- SUBTITULO (FIRMA) --- */
 h4 {
     text-align: center;
-    color: var(--accent); /* TU VERDE */
+    color: var(--accent);
+    /* TU VERDE */
     margin-top: 0;
     margin-bottom: 30px;
     font-size: 0.8rem;
@@ -58,13 +75,13 @@ h4 {
 .module-row {
     position: relative;
     background: var(--card-bg);
-    border: 1px solid #333; 
+    border: 1px solid #333;
     padding: 25px;
-    display: flex; 
-    flex-direction: row; 
+    display: flex;
+    flex-direction: row;
     gap: 30px;
     min-height: 180px;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 /* Animación Borde Blanco */
@@ -73,18 +90,19 @@ h4 {
     position: absolute;
     inset: 0;
     padding: 1px;
-    background: conic-gradient(
-        from var(--angle), 
-        transparent 50%, 
-        var(--neon-border) 100%
-    );
+    background: conic-gradient(from var(--angle),
+            transparent 50%,
+            var(--neon-border) 100%);
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
     -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: rotate 4s linear infinite;
-    opacity: 0.8; 
+    opacity: 0.8;
     pointer-events: none;
 }
 
@@ -93,11 +111,16 @@ h4 {
     initial-value: 0deg;
     inherits: false;
 }
-@keyframes rotate { to { --angle: 360deg; } }
+
+@keyframes rotate {
+    to {
+        --angle: 360deg;
+    }
+}
 
 /* --- COLUMNAS Y LAYOUT --- */
 .module-info {
-    flex: 0 0 130px; 
+    flex: 0 0 130px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -126,22 +149,43 @@ h4 {
     gap: 30px;
 }
 
-.col-shortcut { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 15px; }
-.col-list { flex: 1.5; display: flex; flex-direction: column; border-left: 1px solid #333; padding-left: 30px; }
-
-/* --- INPUTS Y BOTONES --- */
-label { 
-    font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; 
-    letter-spacing: 1px; margin-bottom: 8px; display: block; font-weight: bold;
+.col-shortcut {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
 }
 
-.input-wrapper { display: flex; gap: 10px; }
+.col-list {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #333;
+    padding-left: 30px;
+}
+
+/* --- INPUTS Y BOTONES --- */
+label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+    font-weight: bold;
+}
+
+.input-wrapper {
+    display: flex;
+    gap: 10px;
+}
 
 input[type="text"] {
     width: 100%;
     background: #000;
     border: 1px solid #444;
-    color: var(--accent); 
+    color: var(--accent);
     padding: 12px;
     font-family: inherit;
     text-align: center;
@@ -149,32 +193,55 @@ input[type="text"] {
     outline: none;
     font-weight: bold;
 }
-input[type="text"]:focus { border-color: var(--accent); }
+
+input[type="text"]:focus {
+    border-color: var(--accent);
+}
 
 /* Botón Grabar */
 .btn-record {
     background: #000;
     border: 1px solid #444;
     color: white;
-    width: 45px; cursor: pointer; transition: 0.2s;
-    font-family: inherit; display: flex; align-items: center; justify-content: center;
+    width: 45px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.btn-record:hover { border-color: white; }
-.btn-record.recording { 
-    background: var(--accent); 
-    color: black; 
-    border-color: var(--accent); 
-    animation: pulse 0.8s infinite; 
+
+.btn-record:hover {
+    border-color: white;
+}
+
+.btn-record.recording {
+    background: var(--accent);
+    color: black;
+    border-color: var(--accent);
+    animation: pulse 0.8s infinite;
 }
 
 /* Botón Añadir Manual */
 .btn-manual {
-    background: transparent; border: none; color: #666;
-    font-size: 0.7rem; cursor: pointer; text-align: left; padding: 10px 0;
-    font-family: inherit; text-transform: uppercase; letter-spacing: 1px;
-    border-top: 1px dashed #222; margin-top: 5px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 0.7rem;
+    cursor: pointer;
+    text-align: left;
+    padding: 10px 0;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-top: 1px dashed #222;
+    margin-top: 5px;
 }
-.btn-manual:hover { color: white; }
+
+.btn-manual:hover {
+    color: white;
+}
 
 /* Botón Guardar Principal */
 .btn-save {
@@ -189,11 +256,13 @@ input[type="text"]:focus { border-color: var(--accent); }
     text-transform: uppercase;
     cursor: pointer;
     transition: 0.2s;
-    font-family: inherit; font-size: 0.9rem;
+    font-family: inherit;
+    font-size: 0.9rem;
 }
+
 .btn-save:hover {
     background: var(--accent);
-    color: black; 
+    color: black;
     box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
 }
 
@@ -206,43 +275,198 @@ input[type="text"]:focus { border-color: var(--accent); }
 }
 
 .list-item {
-    display: flex; align-items: center; padding: 8px 0;
-    cursor: pointer; transition: 0.2s; border-bottom: 1px solid #111;
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: 0.2s;
+    border-bottom: 1px solid #111;
 }
-.list-item:last-child { border-bottom: none; }
-.list-item:hover span { color: var(--accent); }
 
-.list-item span { font-size: 0.85rem; margin-left: 12px; }
+.list-item:last-child {
+    border-bottom: none;
+}
+
+.list-item:hover span {
+    color: var(--accent);
+}
+
+.list-item span {
+    font-size: 0.85rem;
+    margin-left: 12px;
+}
 
 /* Checkbox Custom VERDE */
 input[type="checkbox"] {
     appearance: none;
-    width: 16px; height: 16px;
+    width: 16px;
+    height: 16px;
     border: 1px solid #666;
     background: black;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 input[type="checkbox"]:checked {
     background: var(--accent);
     border-color: var(--accent);
     box-shadow: 0 0 10px var(--accent);
 }
+
 input[type="checkbox"]:checked::after {
-    content: "✕"; 
-    font-size: 12px; color: black; font-weight: 900;
+    content: "✕";
+    font-size: 12px;
+    color: black;
+    font-weight: 900;
 }
 
 /* Utilidades */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: #333; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar {
+    width: 4px;
+}
 
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+::-webkit-scrollbar-thumb {
+    background: #333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.4;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
 
 @media (max-width: 650px) {
-    .module-row { flex-direction: column; gap: 15px; }
-    .module-info { border-right: none; border-bottom: 1px solid #333; padding-bottom: 15px; padding-right: 0; flex: 0;}
-    .module-content { flex-direction: column; }
-    .col-list { border-left: none; padding-left: 0; border-top: 1px solid #333; padding-top: 15px;}
+    .module-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .module-info {
+        border-right: none;
+        border-bottom: 1px solid #333;
+        padding-bottom: 15px;
+        padding-right: 0;
+        flex: 0;
+    }
+
+    .module-content {
+        flex-direction: column;
+    }
+
+    .col-list {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid #333;
+        padding-top: 15px;
+    }
+}
+
+/* --- BARRA DE ARRASTRE (DRAG REGION) --- */
+html {
+    height: 100%;
+    -webkit-app-region: drag;
+}
+
+body {
+    -webkit-app-region: drag;
+}
+
+button,
+input,
+.list-item,
+.scroll-list {
+    -webkit-app-region: no-drag;
+}
+
+.title-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    /* Botón X a la derecha */
+    padding: 10px;
+
+    /* ESTA PROPIEDAD HACE QUE SE PUEDA ARRASTRAR LA VENTANA */
+    -webkit-app-region: drag;
+}
+
+/* Botón de cerrar personalizado */
+.btn-close {
+    -webkit-app-region: no-drag;
+    /* Importante: para poder hacer clic */
+    background: transparent;
+    border: none;
+    color: #666;
+    font-family: var(--font-stack);
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.btn-close:hover {
+    color: var(--accent);
+}
+
+/* --- ZONA DE ARRASTRE (DRAG ZONE) --- */
+.title-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    /* Altura de la zona invisible para agarrar */
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-end;
+    /* Botón a la derecha */
+    padding: 15px;
+
+    /* ESTO ES LO QUE PERMITE ARRASTRAR LA VENTANA */
+    -webkit-app-region: drag;
+
+    /* Para que no tape el click de cosas que estén muy arriba si las hubiera */
+    pointer-events: auto;
+}
+
+/* IMPORTANTE: El botón de cerrar debe ser "NO ARRASTRABLE" para poder hacer clic */
+.btn-close {
+    -webkit-app-region: no-drag;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-family: var(--font-stack);
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px 12px;
+    transition: 0.2s;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close:hover {
+    color: var(--accent);
+
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
 }

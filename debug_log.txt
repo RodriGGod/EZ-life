@@ -1,8 +1,0 @@
-Intentando abrir: opera con url: C:\Users\rblo2\Desktop\prueba.html
-No encuentro Opera en: C:\Users\rblo2\AppData\Local\Programs\Opera GX\launcher.exe
-Usando fallback de sistema (start browser)
-Intentando abrir: brave con url: C:\Users\rblo2\Desktop\prueba.html
-Intentando abrir: brave con url: C:\Users\rblo2\Desktop\prueba.html
-Intentando abrir: opera con url: C:\Users\rblo2\Desktop\prueba.html
-No encuentro Opera en: C:\Users\rblo2\AppData\Local\Programs\Opera GX\launcher.exe
-Usando fallback de sistema (start browser)
