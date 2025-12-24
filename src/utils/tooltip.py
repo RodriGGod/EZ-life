@@ -22,17 +22,17 @@ def show_tooltip(text, duration=1200, offset_x=20, offset_y=20):
             root.overrideredirect(True)
             root.attributes("-topmost", True)
             
-            # Estilo simple blanco y negro
+            # Estilo blanco y negro (texto blanco, fondo negro)
             lbl = tk.Label(
                 root,
                 text=text,
-                bg="#ffffff",  # Fondo blanco
-                fg="#000000",  # Texto negro
+                bg="#000000",  # Fondo negro
+                fg="#ffffff",  # Texto blanco
                 font=("Segoe UI", 9),  # Fuente normal de Windows
-                padx=8,
-                pady=4,
-                relief="solid",
-                borderwidth=1
+                padx=10,
+                pady=6,
+                relief="flat",
+                borderwidth=0
             )
             lbl.pack()
             
