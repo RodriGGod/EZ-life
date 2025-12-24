@@ -36,9 +36,10 @@ body {
     /* Sombra para que destaque sobre el escritorio */
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
 
-    height: 90vh;
-    /* Altura ajustada */
-    overflow: hidden;
+    /* Permitir scroll vertical */
+    min-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* --- TITULO --- */
@@ -407,15 +408,28 @@ input[type="checkbox"]:checked::after {
 }
 
 /* Utilidades */
-::-webkit-scrollbar {
+/* Ocultar scrollbar del body pero mantener scroll */
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Scrollbar personalizado solo para listas internas */
+.scroll-list::-webkit-scrollbar {
     width: 4px;
 }
 
-::-webkit-scrollbar-thumb {
+.scroll-list::-webkit-scrollbar-thumb {
     background: #333;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.scroll-list::-webkit-scrollbar-thumb:hover {
     background: var(--accent);
 }
 

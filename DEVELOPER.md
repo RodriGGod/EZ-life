@@ -6,7 +6,7 @@
 src/
 ├── main.py                    # Entry point: Configuration GUI
 ├── daemon.py                  # Entry point: Background hotkey daemon
-├── proxy.py                   # Entry point: Browser proxy
+├── proxy.py                   # Entry point: Browser proxy (generates EZLife_Browser.exe)
 │
 ├── core/                      # Core shared functionality
 │   ├── __init__.py
@@ -21,11 +21,12 @@ src/
 │   │   ├── __init__.py
 │   │   ├── detector.py        # Browser detection
 │   │   ├── switcher.py        # Browser switching logic
-│   │   └── proxy.py           # URL handler
+│   │   └── proxy.py           # URL handler (used by proxy.py)
 │   └── editor/                # Code editor module
 │       ├── __init__.py
 │       ├── detector.py        # Editor detection
 │       └── switcher.py        # Editor switching logic
+│       # Future: editor_proxy.py for file opening
 │
 ├── ui/                        # User interface
 │   ├── __init__.py
@@ -39,12 +40,29 @@ src/
 │   ├── process.py             # Process management
 │   └── tooltip.py             # Visual feedback
 │
-├── build/                     # Build artifacts (old spec files)
-├── dist/                      # Compiled executables
+├── build/                     # Build configuration
+│   ├── main.spec
+│   ├── proxy.spec
+│   └── daemon.spec
 │
-├── main.spec                  # PyInstaller spec for config GUI
-├── daemon.spec                # PyInstaller spec for daemon
-└── proxy.spec                 # PyInstaller spec for proxy
+└── dist/                      # Compiled executables (gitignored)
+
+## Architecture: One Proxy Per Module
+
+Each module that needs to register as a Windows default application requires its own proxy executable:
+
+- **Browser Module** → `EZLife_Browser.exe` (from proxy.py)
+  - Registers as default web browser
+  - Intercepts URLs and opens in current browser
+  
+- **Editor Module** (future) → `EZLife_Editor.exe` (from editor_proxy.py)
+  - Registers as default text/code editor
+  - Intercepts file open requests and opens in current editor
+
+- **Daemon** → `daemon.exe`
+  - Single daemon manages ALL module hotkeys
+  - Listens for browser hotkey, editor hotkey, etc.
+  - Coordinates switching across all modules
 ```
 
 ## Module System

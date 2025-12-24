@@ -22,19 +22,21 @@ def show_tooltip(text, duration=1200, offset_x=20, offset_y=20):
             root.overrideredirect(True)
             root.attributes("-topmost", True)
             
-            # Create label with styling
+            # Estilo simple blanco y negro
             lbl = tk.Label(
                 root,
                 text=text,
-                bg="#333333",
-                fg="#00ff00",
-                font=("Segoe UI", 10, "bold"),
-                padx=15,
-                pady=8
+                bg="#ffffff",  # Fondo blanco
+                fg="#000000",  # Texto negro
+                font=("Segoe UI", 9),  # Fuente normal de Windows
+                padx=8,
+                pady=4,
+                relief="solid",
+                borderwidth=1
             )
             lbl.pack()
             
-            # Position near mouse cursor
+            # Posición near mouse cursor
             x, y = root.winfo_pointerx(), root.winfo_pointery()
             root.geometry(f"+{x + offset_x}+{y + offset_y}")
             

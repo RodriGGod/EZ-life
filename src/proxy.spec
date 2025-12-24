@@ -3,7 +3,7 @@
 block_cipher = None
 
 a = Analysis(
-    ['../proxy.py'],
+    ['proxy.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -27,7 +27,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='proxy',
+    name='EZLife_Browser',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -40,4 +40,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='../assets/ezlife.ico',
 )

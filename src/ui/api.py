@@ -91,7 +91,7 @@ class ConfigAPI:
         
         try:
             if self.config.save(data):
-                restart_process("daemon")
+                restart_process("controlador")
                 return True
             return False
         except Exception as e:

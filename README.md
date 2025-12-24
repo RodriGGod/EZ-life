@@ -54,9 +54,9 @@
     python src/main.py
     ```
 
-4.  **Run the background daemon:**
+4.  **Run the background controller:**
     ```bash
-    python src/daemon.py
+    python src/controlador.py
     ```
 
 ---
@@ -180,14 +180,14 @@ To compile the application into standalone executables:
     ```bash
     cd src
     pyinstaller main.spec
-    pyinstaller daemon.spec
+    pyinstaller controlador.spec
     pyinstaller proxy.spec
     ```
 
 3.  **Executables will be in:**
     - `src/dist/EZLife_Config.exe` - Configuration GUI
-    - `src/dist/daemon.exe` - Background daemon
-    - `src/dist/proxy.exe` - Browser proxy
+    - `src/dist/controlador.exe` - Background controller
+    - `src/dist/EZLife_Browser.exe` - Browser proxy
 
 For detailed developer documentation, see [DEVELOPER.md](DEVELOPER.md).
 

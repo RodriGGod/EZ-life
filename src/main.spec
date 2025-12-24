@@ -3,10 +3,10 @@
 block_cipher = None
 
 a = Analysis(
-    ['../main.py'],
+    ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('../ui/web', 'ui/web')],
+    datas=[('ui/web', 'ui/web')],
     hiddenimports=['core', 'modules', 'ui', 'utils'],
     hookspath=[],
     hooksconfig={},
@@ -40,4 +40,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='../assets/ezlife.ico',
 )

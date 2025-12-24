@@ -60,24 +60,34 @@ def get_executable_path(name):
     Get the full path to an executable.
     
     Args:
-        name: Name of the executable (e.g., 'controlador', 'browser')
+        name: Name of the executable (e.g., 'controlador', 'browser', 'proxy')
     
     Returns:
         Full path to the executable (.exe when frozen, .py in development)
     """
+    # Map internal names to actual executable names
+    name_mapping = {
+        'proxy': 'EZLife_Browser',
+        'browser': 'EZLife_Browser',
+        'daemon': 'controlador',
+    }
+    
+    # Use mapped name if available
+    exe_name = name_mapping.get(name, name)
+    
     install_dir = get_install_dir()
     
     if getattr(sys, 'frozen', False):
         # Look for .exe
-        exe_path = os.path.join(install_dir, f"{name}.exe")
+        exe_path = os.path.join(install_dir, f"{exe_name}.exe")
         if os.path.exists(exe_path):
             return exe_path
     
-    # Look for .py script
+    # Look for .py script (use original name for scripts)
     base_dir = get_base_dir()
     py_path = os.path.join(base_dir, f"{name}.py")
     if os.path.exists(py_path):
         return py_path
     
     # Return expected .exe path even if it doesn't exist
-    return os.path.join(install_dir, f"{name}.exe")
+    return os.path.join(install_dir, f"{exe_name}.exe")

@@ -22,7 +22,7 @@ class RegistryManager:
             dict: {"success": bool, "message": str}
         """
         try:
-            controlador_path = get_executable_path("daemon")
+            controlador_path = get_executable_path("controlador")
             
             # Wrap .py files in python command
             if controlador_path.endswith('.py'):
