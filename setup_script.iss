@@ -43,6 +43,9 @@ Source: "src\dist\EZLife_Browser.exe"; DestDir: "{app}"; Flags: ignoreversion re
 ; Incluir el icono en la instalación
 Source: "src\resources\EZlifeLogo.ico"; DestDir: "{app}"; Flags: ignoreversion
 
+; Incluir el icono del navegador
+Source: "src\resources\EZbrowserLogo.ico"; DestDir: "{app}"; Flags: ignoreversion
+
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\EZlifeLogo.ico"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\EZlifeLogo.ico"; Tasks: desktopicon
@@ -51,7 +54,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilen
 ; REGISTRO DEL NAVEGADOR PARA WINDOWS
 Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool"; ValueType: string; ValueName: ""; ValueData: "EZLife Tool"
 Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\Capabilities"; ValueType: string; ValueName: "ApplicationDescription"; ValueData: "EZLife Tool - Context Switching"
-Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\Capabilities"; ValueType: string; ValueName: "ApplicationIcon"; ValueData: "{app}\{#MyBrowserExe},0"
+Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\Capabilities"; ValueType: string; ValueName: "ApplicationIcon"; ValueData: "{app}\EZbrowserLogo.ico"
 Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\Capabilities"; ValueType: string; ValueName: "ApplicationName"; ValueData: "EZLife Tool"
 
 ; Asociaciones URL
@@ -62,7 +65,7 @@ Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\Capabilities\
 ; Comandos de ejecución
 Root: HKLM; Subkey: "SOFTWARE\Clients\StartMenuInternet\EZLifeTool\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyBrowserExe}"" ""%1"""
 Root: HKLM; Subkey: "SOFTWARE\Classes\EZLifeToolHTML"; ValueType: string; ValueName: ""; ValueData: "EZLife Tool Link"
-Root: HKLM; Subkey: "SOFTWARE\Classes\EZLifeToolHTML\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#MyBrowserExe},0"
+Root: HKLM; Subkey: "SOFTWARE\Classes\EZLifeToolHTML\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\EZbrowserLogo.ico"
 Root: HKLM; Subkey: "SOFTWARE\Classes\EZLifeToolHTML\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#MyBrowserExe}"" ""%1"""
 
 ; Registrar App
