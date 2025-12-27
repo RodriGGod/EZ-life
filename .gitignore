@@ -33,7 +33,8 @@ Output/
 *~
 .DS_Store
 
-# Configuration (IMPORTANTE: no subir config con datos sensibles)
+# Configuration (IMPORTANT: do not upload config with sensitive data)
+config.json
 src/config.json
 config.json.local
 
